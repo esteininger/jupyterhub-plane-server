@@ -9,6 +9,6 @@ docker/cli.sh \
     connect \
     --cluster 'localhost:9090' \
     --key 'my-first-backend' \
-    --image 'ghcr.io/drifting-in-space/demo-image-drop-four' \
+    --image 'hub' \
     --wait
 ```
