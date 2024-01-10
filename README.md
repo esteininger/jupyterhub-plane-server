@@ -1,6 +1,7 @@
-1. start plane: `docker compose -f docker/docker-compose.yml up`
-2. create jupyterhub container: `docker build -t hub .`
-3. run container in plane: 
+1. clone plane `git clone https://github.com/drifting-in-space/plane.git` && `cd plane`
+2. start plane: `docker compose -f docker/docker-compose.yml up`
+3. create jupyterhub container: `docker build -t hub .`
+4. run container in plane: 
 
 ```
 docker/cli.sh \
