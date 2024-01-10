@@ -9,18 +9,13 @@ import requests
 
 
 class JupyterHubAPI:
-    def __init__(self, api_key, kernel_id=None):
-        self.api_url = "http://localhost:9090/user/e"
-        self.headers = {
-            "Authorization": f"token {api_key}",
-        }
-        self.kernel_id = kernel_id
+    def __init__(self, base_url='http://localhost:8888', base_ws_url='ws://localhost:8888'):
+        self.base_url = base_url
+        self.base_ws_url = base_ws_url
+        self.kernel_id = None
 
     def create_kernel(self):
-        response = requests.post(
-            f"{self.api_url}/api/kernels",
-            headers=self.headers
-        )
+        response = requests.post(f"{self.base_url}/api/kernels",)
         if response.status_code == 201:
             self.kernel_id = response.json()['id']
             return self.kernel_id
@@ -70,8 +65,8 @@ class JupyterHubAPI:
     def execute_code(self, code):
         msg = self.send_execute_request(code)
 
-        self.ws_url = f'ws://localhost:9090/user/e/api/kernels/{self.kernel_id}/channels'
-        self.ws = create_connection(self.ws_url, header=self.headers)
+        self.ws_url = f'{self.base_ws_url}/api/kernels/{self.kernel_id}/channels'
+        self.ws = create_connection(self.ws_url)
         self.ws.send(msg)
 
         msg_type = ''
@@ -86,8 +81,7 @@ class JupyterHubAPI:
             return "Kernel not created or already destroyed"
 
         response = requests.delete(
-            f"{self.api_url}/api/kernels/{self.kernel_id}",
-            headers=self.headers
+            f"{self.base_url}/api/kernels/{self.kernel_id}"
         )
         if response.status_code == 204:
             self.kernel_id = None
@@ -98,28 +92,26 @@ class JupyterHubAPI:
 
 # Assume JupyterHubAPI class is already defined as provided earlier.
 # Replace 'your_api_key_here' with your actual JupyterHub API key
-api_key = ''
-kernel_id = "955e9cc0-c9aa-4f96-a3b4-5c5f179d85c2"
-jupyter_hub_api = JupyterHubAPI(api_key, kernel_id=kernel_id)
+jupyter_hub_api = JupyterHubAPI()
 
-# # Create a new kernel
-# kernel_id = jupyter_hub_api.create_kernel()
+# Create a new kernel
+kernel_id = jupyter_hub_api.create_kernel()
 
-# print(kernel_id)
+print(kernel_id)
 
 # Install packages
 # Replace with desired packages
-# packages_to_install = ['requests', 'numpy']
-# install_response = jupyter_hub_api.install_packages(packages_to_install)
-# print(f"Package Installation Response: {install_response}")
+packages_to_install = ['requests', 'numpy', 'PyPDF2', 'pytesseract']
+install_response = jupyter_hub_api.install_packages(packages_to_install)
+print(f"Package Installation Response: {install_response}")
 
 # Execute Python code
 python_code = """
-print('Hello Worlddd!')
+print('Hello!')
 """
 execute_response = jupyter_hub_api.execute_code(python_code)
 # print(f"Code Execution Response: {execute_response}")
 
-# Destroy the kernel
+# # Destroy the kernel
 # destroy_response = jupyter_hub_api.destroy_kernel()
 # print(f"Kernel Destruction Response: {destroy_response}")
